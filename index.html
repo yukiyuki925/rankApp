@@ -144,22 +144,38 @@
       const svg = document.getElementById("svg");
       const resultDiv = document.getElementById("result");
 
-      // 入力時の候補を表示（順位は非表示）
-      inputField.addEventListener("input", function () {
-        const input = this.value.toLowerCase();
+      // 配列をランダムに並べ替える関数
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      // datalistに選択肢を表示する関数
+      function displayOptions(data) {
         datalist.innerHTML = "";
-        if (!input) return;
-
-        const filteredData = Data.filter((item) =>
-          item.toLowerCase().includes(input)
-        );
-
-        filteredData.forEach((item) => {
+        data.forEach((item) => {
           const [, attractionName] = item.split(",");
           const option = document.createElement("option");
           option.value = attractionName;
           datalist.appendChild(option);
         });
+      }
+
+      // 初回クリック時にランダム順で全選択肢を表示
+      inputField.addEventListener("focus", () => {
+        displayOptions(shuffleArray([...Data]));
+      });
+
+      // 入力時にフィルタリングされた選択肢を表示
+      inputField.addEventListener("input", function () {
+        const input = this.value.toLowerCase();
+        const filteredData = Data.filter((item) =>
+          item.toLowerCase().includes(input)
+        );
+        displayOptions(filteredData);
       });
 
       // ボタン押下時の処理
